@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SimpleWeaveView">
+        <attr name="swv_backgroundColor" format="color" />
+        <attr name="swv_lineColor" format="color" />
+        <attr name="swv_lineDegrees" format="float">
+            <enum name="upward" value="0" />
+            <enum name="leftToRight" value="90" />
+            <enum name="downward" value="180" />
+            <enum name="rightToLeft" value="270" />
+        </attr>
+        <attr name="swv_lineWidth" format="dimension" />
+        <attr name="swv_lineGap" format="dimension" />
+        <attr name="swv_clipRadius" format="dimension">
+            <enum name="circle" value="-1" />
+        </attr>
+    </declare-styleable>
+</resources>
