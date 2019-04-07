@@ -145,17 +145,17 @@ public class SimpleWeaveView extends View {
         //画线
         if (mLineDegrees % COMPLETE_CIRCLE_DEGREES < 90) {
             //左下角开始
-            float mashWidth = (float) (mHeight / Math.tan(Math.PI * (mLineDegrees % COMPLETE_CIRCLE_DEGREES / HALF_CIRCLE_DEGREES)));
-            for (float i = -mashWidth; i <= mWidth; i += mLineWidth + mLineGap) {
-                if (mLineDegrees == 90) {
-                    mLinePath.reset();
-                    mLinePath.moveTo(i, mHeight);
-                    mLinePath.lineTo(i + mashWidth, 0);
-                    // mLinePath.lineTo(i+mashWidth+mLineWidth, );
-                    mLinePath.close();
-                    canvas.drawPath(mLinePath, mPaintLine);
-                }
-            }
+            // float mashWidth = (float) (mHeight / Math.tan(Math.PI * (mLineDegrees % COMPLETE_CIRCLE_DEGREES / HALF_CIRCLE_DEGREES)));
+            // for (float i = -mashWidth; i <= mWidth; i += mLineWidth + mLineGap) {
+            //     if (mLineDegrees == 90) {
+            //         mLinePath.reset();
+            //         mLinePath.moveTo(i, mHeight);
+            //         mLinePath.lineTo(i + mashWidth, 0);
+            //         // mLinePath.lineTo(i+mashWidth+mLineWidth, );
+            //         mLinePath.close();
+            //         canvas.drawPath(mLinePath, mPaintLine);
+            //     }
+            // }
         } else if (mLineDegrees % COMPLETE_CIRCLE_DEGREES >= 90 &&
                 mLineDegrees % COMPLETE_CIRCLE_DEGREES < 180) {
             //左上角开始
