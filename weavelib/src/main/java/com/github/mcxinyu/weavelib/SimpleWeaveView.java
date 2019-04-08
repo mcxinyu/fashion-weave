@@ -64,7 +64,7 @@ public class SimpleWeaveView extends View {
     /**
      * 裁剪圆角
      */
-    public Path mClipPath;
+    private Path mClipPath;
 
     private int mWidth;
     private int mHeight;
