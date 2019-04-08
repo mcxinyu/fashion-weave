@@ -3,6 +3,7 @@ package com.github.mcxinyu.weavelib;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -10,6 +11,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -81,12 +83,19 @@ public class SimpleWeaveView extends View {
         super(context, attrs, defStyleAttr);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.SimpleWeaveView, defStyleAttr, 0);
-        mBackgroundColor = typedArray.getColor(R.styleable.SimpleWeaveView_swv_backgroundColor, getResources().getColor(R.color.transparent));
-        mLineColor = typedArray.getColor(R.styleable.SimpleWeaveView_swv_lineColor, getResources().getColor(R.color.color_mask));
-        mLineDegrees = typedArray.getFloat(R.styleable.SimpleWeaveView_swv_lineDegrees, 270f);
+        mLineColor = typedArray.getColor(R.styleable.SimpleWeaveView_swv_lineColor, ContextCompat.getColor(getContext(), R.color.color_mask));
+        mBackgroundColor = typedArray.getColor(R.styleable.SimpleWeaveView_swv_backgroundColor, -1);
+        mLineDegrees = typedArray.getFloat(R.styleable.SimpleWeaveView_swv_lineDegrees, 0f);
         mLineWidth = typedArray.getDimensionPixelSize(R.styleable.SimpleWeaveView_swv_lineWidth, 8);
         mLineGap = typedArray.getDimensionPixelSize(R.styleable.SimpleWeaveView_swv_lineGap, 8);
-        mClipRadius = typedArray.getDimensionPixelSize(R.styleable.SimpleWeaveView_swv_clipRadius, 0);
+        mClipRadius = typedArray.getLayoutDimension(R.styleable.SimpleWeaveView_swv_clipRadius, 0);
+
+        if (mBackgroundColor == -1) {
+            int alpha = Color.alpha(mLineColor);
+            int newAlpha = Math.min(255, Math.max(0, (int) (alpha * 0.2))) << 24;
+            int rgb = 0x00ffffff & mLineColor;
+            mBackgroundColor = newAlpha + rgb;
+        }
 
         typedArray.recycle();
 
@@ -133,6 +142,11 @@ public class SimpleWeaveView extends View {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
@@ -141,32 +155,21 @@ public class SimpleWeaveView extends View {
         canvas.clipPath(mClipPath);
         //背景
         canvas.drawRoundRect(mContentRect, mClipRadius, mClipRadius, mPaintBg);
+        //旋转角度
+        canvas.rotate(mLineDegrees - 90);
+
+        //取 view 的斜边做半径，并对改半径形成的圆取外切圆的矩形做绘画区域
+        int measureWidth = (int) Math.ceil(Math.sqrt(Math.pow(mWidth, 2) + Math.pow(mHeight, 2)));
 
         //画线
-        if (mLineDegrees % COMPLETE_CIRCLE_DEGREES < 90) {
-            //左下角开始
-            // float mashWidth = (float) (mHeight / Math.tan(Math.PI * (mLineDegrees % COMPLETE_CIRCLE_DEGREES / HALF_CIRCLE_DEGREES)));
-            // for (float i = -mashWidth; i <= mWidth; i += mLineWidth + mLineGap) {
-            //     if (mLineDegrees == 90) {
-            //         mLinePath.reset();
-            //         mLinePath.moveTo(i, mHeight);
-            //         mLinePath.lineTo(i + mashWidth, 0);
-            //         // mLinePath.lineTo(i+mashWidth+mLineWidth, );
-            //         mLinePath.close();
-            //         canvas.drawPath(mLinePath, mPaintLine);
-            //     }
-            // }
-        } else if (mLineDegrees % COMPLETE_CIRCLE_DEGREES >= 90 &&
-                mLineDegrees % COMPLETE_CIRCLE_DEGREES < 180) {
-            //左上角开始
-
-        } else if (mLineDegrees % COMPLETE_CIRCLE_DEGREES >= 180 &&
-                mLineDegrees % COMPLETE_CIRCLE_DEGREES < 270) {
-            //右上角开始
-
-        } else {
-            //右下角开始
-
+        for (int pHeight = -measureWidth; pHeight <= measureWidth * 2; pHeight += mLineWidth + mLineGap) {
+            mLinePath.reset();
+            mLinePath.moveTo(-measureWidth, pHeight);
+            mLinePath.lineTo(measureWidth, pHeight);
+            mLinePath.lineTo(measureWidth, pHeight + mLineWidth);
+            mLinePath.lineTo(-measureWidth, pHeight + mLineWidth);
+            mLinePath.close();
+            canvas.drawPath(mLinePath, mPaintLine);
         }
 
         canvas.restore();
