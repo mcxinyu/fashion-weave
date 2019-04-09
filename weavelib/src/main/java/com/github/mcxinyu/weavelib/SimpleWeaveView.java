@@ -124,9 +124,9 @@ public class SimpleWeaveView extends View {
         mClipPath.reset();
         if (mClipRadius <= -1) {
             if (mWidth > mHeight) {
-                mClipPath.addRoundRect(mContentRect, mHeight / 2, mHeight / 2, Path.Direction.CW);
+                mClipPath.addRoundRect(mContentRect, mHeight / 2f, mHeight / 2f, Path.Direction.CW);
             } else {
-                mClipPath.addRoundRect(mContentRect, mWidth / 2, mWidth / 2, Path.Direction.CW);
+                mClipPath.addRoundRect(mContentRect, mWidth / 2f, mWidth / 2f, Path.Direction.CW);
             }
         } else {
             mClipPath.addRoundRect(mContentRect, mClipRadius, mClipRadius, Path.Direction.CW);
@@ -151,22 +151,28 @@ public class SimpleWeaveView extends View {
         canvas.clipPath(mClipPath);
         //背景
         canvas.drawRoundRect(mContentRect, mClipRadius, mClipRadius, mPaintBg);
-        //旋转角度
+
+        //移动画布中心点
+        canvas.translate(mWidth / 2f, mHeight / 2f);
+
+        //旋转角度，减 90° 模拟时钟角度
         canvas.rotate(mLineDegrees - 90);
 
-        //取 view 的斜边做半径，并对改半径形成的圆取外切圆的矩形做绘画区域
-        int measureWidth = (int) Math.ceil(Math.sqrt(Math.pow(mWidth, 2) + Math.pow(mHeight, 2)));
+        //region 取 view 的外切圆的外切矩形做绘画区域，可参考图解 https://raw.githubusercontent.com/mcxinyu/fashion-weave/42532dee90b3fe608811d39f237d69a5401565b3/art/20190409164548.png
+        //计算 view 外切圆半径
+        int excisionCircleRadius = (int) Math.ceil((Math.sqrt(Math.pow(mWidth, 2) + Math.pow(mHeight, 2))) / 2d);
 
         //画线
-        for (int pHeight = -measureWidth; pHeight <= measureWidth * 2; pHeight += mLineWidth + mLineGap) {
+        for (int pHeight = -excisionCircleRadius; pHeight <= excisionCircleRadius * 2; pHeight += mLineWidth + mLineGap) {
             mLinePath.reset();
-            mLinePath.moveTo(-measureWidth, pHeight);
-            mLinePath.lineTo(measureWidth, pHeight);
-            mLinePath.lineTo(measureWidth, pHeight + mLineWidth);
-            mLinePath.lineTo(-measureWidth, pHeight + mLineWidth);
+            mLinePath.moveTo(-excisionCircleRadius, pHeight);
+            mLinePath.lineTo(excisionCircleRadius, pHeight);
+            mLinePath.lineTo(excisionCircleRadius, pHeight + mLineWidth);
+            mLinePath.lineTo(-excisionCircleRadius, pHeight + mLineWidth);
             mLinePath.close();
             canvas.drawPath(mLinePath, mPaintLine);
         }
+        //endregion
 
         canvas.restore();
     }
