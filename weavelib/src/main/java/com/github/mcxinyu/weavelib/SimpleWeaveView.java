@@ -121,7 +121,8 @@ public class SimpleWeaveView extends View {
         mPaintBg.setColor(mBackgroundColor);
         mPaintLine.setColor(mLineColor);
 
-        if (mClipRadius == -1) {
+        mClipPath.reset();
+        if (mClipRadius <= -1) {
             if (mWidth > mHeight) {
                 mClipPath.addRoundRect(mContentRect, mHeight / 2, mHeight / 2, Path.Direction.CW);
             } else {
@@ -168,5 +169,62 @@ public class SimpleWeaveView extends View {
         }
 
         canvas.restore();
+    }
+
+    public int getViewBackgroundColor() {
+        return mBackgroundColor;
+    }
+
+    public void setViewBackgroundColor(int backgroundColor) {
+        mBackgroundColor = backgroundColor;
+        attrInvalidate();
+        invalidate();
+    }
+
+    public int getLineColor() {
+        return mLineColor;
+    }
+
+    public void setLineColor(int lineColor) {
+        mLineColor = lineColor;
+        attrInvalidate();
+        invalidate();
+    }
+
+    public float getLineDegrees() {
+        return mLineDegrees;
+    }
+
+    public void setLineDegrees(float lineDegrees) {
+        mLineDegrees = lineDegrees;
+        invalidate();
+    }
+
+    public int getLineWidth() {
+        return mLineWidth;
+    }
+
+    public void setLineWidth(int lineWidth) {
+        mLineWidth = lineWidth;
+        invalidate();
+    }
+
+    public int getLineGap() {
+        return mLineGap;
+    }
+
+    public void setLineGap(int lineGap) {
+        mLineGap = lineGap;
+        invalidate();
+    }
+
+    public int getClipRadius() {
+        return mClipRadius;
+    }
+
+    public void setClipRadius(int clipRadius) {
+        mClipRadius = clipRadius;
+        attrInvalidate();
+        invalidate();
     }
 }
